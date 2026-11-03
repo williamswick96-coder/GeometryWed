@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometry Module - Section 5.2 Areas of Triangles, Parallelograms & Trapezoids</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- MathJax for TeX Rendering -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        #laser-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(37, 99, 235, 0.2); }
+            50% { box-shadow: 0 0 30px rgba(37, 99, 235, 0.4); }
+        }
+        .token-glow {
+            animation: pulseGlow 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col font-sans selection:bg-blue-600 selection:text-white">
+
+    <!-- Laser Celebration Canvas -->
+    <canvas id="laser-canvas"></canvas>
+
+    <!-- Header Navigation -->
+    <header class="bg-white/95 border-b border-slate-200 sticky top-0 z-30 backdrop-blur-md shadow-sm">
+        <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-blue-600 text-white p-2.5 rounded-xl font-bold text-lg shadow-md shadow-blue-600/20">
+                    <i class="fa-solid fa-draw-polygon"></i>
+                </div>
+                <div>
+                    <h1 class="text-base sm:text-lg font-extrabold text-slate-900 leading-tight">Geometry Practice Module</h1>
+                    <span class="text-xs text-blue-600 font-semibold">Holt Geometry 5.2 • Triangles, Parallelograms & Trapezoids</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <div class="bg-slate-100 border border-slate-300 rounded-xl px-3 py-1.5 flex items-center gap-2 text-xs font-bold text-slate-700">
+                    <i class="fa-solid fa-list-check text-blue-600"></i>
+                    <span>Score: <strong id="score-counter" class="text-blue-600">0</strong> / 17</span>
+                </div>
+                <button onclick="triggerLaserShow()" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs shadow-md shadow-blue-600/20 transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-bolt-lightning"></i> Test Laser
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-6 space-y-6">
+
+        <!-- Student Name & Info Banner -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-3">
+                <div>
+                    <h2 class="text-xl font-black text-slate-900">Section 5.2: Areas of Triangles, Parallelograms, and Trapezoids</h2>
+                    <p class="text-xs text-slate-500 font-medium">Reference diagrams and figures directly in <strong>Holt Geometry Section 5.2</strong> (pp. 196–197).</p>
+                </div>
+                <span class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-extrabold border border-blue-200">17 Assigned Problems</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1" for="student-first-name">First Name <span class="text-rose-500">*</span></label>
+                    <input type="text" id="student-first-name" placeholder="Enter first name..." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 font-medium focus:outline-none focus:border-blue-600 focus:bg-white transition-all">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1" for="student-last-name">Last Name <span class="text-rose-500">*</span></label>
+                    <input type="text" id="student-last-name" placeholder="Enter last name..." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 font-medium focus:outline-none focus:border-blue-600 focus:bg-white transition-all">
+                </div>
+            </div>
+        </div>
+
+        <!-- Problem #10 -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm transition-all" id="card-q1">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Problem 1 (#10 - Practice and Apply)</span>
+                <span class="text-xs text-slate-400 font-medium" id="status-q1">Attempts left: 2</span>
+            </div>
+            <p class="text-sm text-slate-800 mb-3">Refer to Exercise #10 figure in <strong>Holt Geometry 5.2</strong> (triangle with base \(4\) and height \(7\)).</p>
+            <p class="text-sm font-semibold text-slate-900 mb-4">Find the area of the triangle.</p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <input type="text" id="input-q1" placeholder="Enter numerical answer..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white transition-all">
+                <button onclick="checkQuestion('q1')" id="btn-q1" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Submit #10
+                </button>
+            </div>
+            <div id="feedback-q1" class="mt-3 hidden text-xs font-semibold rounded-xl p-3"></div>
+        </div>
+
+        <!-- Problem #12 -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm transition-all" id="card-q2">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Problem 2 (#12 - Practice and Apply)</span>
+                <span class="text-xs text-slate-400 font-medium" id="status-q2">Attempts left: 2</span>
+            </div>
+            <p class="text-sm text-slate-800 mb-3">Refer to Exercise #12 figure in <strong>Holt Geometry 5.2</strong> (obtuse triangle with base \(14\) and height \(6\)).</p>
+            <p class="text-sm font-semibold text-slate-900 mb-4">Find the area of the triangle.</p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <input type="text" id="input-q2" placeholder="Enter numerical answer..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white transition-all">
+                <button onclick="checkQuestion('q2')" id="btn-q2" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Submit #12
+                </button>
+            </div>
+            <div id="feedback-q2" class="mt-3 hidden text-xs font-semibold rounded-xl p-3"></div>
+        </div>
+
+        <!-- Problem #14 -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm transition-all" id="card-q3">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Problem 3 (#14 - Parallelogram Area)</span>
+                <span class="text-xs text-slate-400 font-medium" id="status-q3">Attempts left: 2</span>
+            </div>
+            <p class="text-sm text-slate-800 mb-3">Refer to Exercise #14 figure in <strong>Holt Geometry 5.2</strong> (parallelogram with base \(2\) and height \(11\)).</p>
+            <p class="text-sm font-semibold text-slate-900 mb-4">Find the area of the parallelogram.</p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <input type="text" id="input-q3" placeholder="Enter numerical answer..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white transition-all">
+                <button onclick="checkQuestion('q3')" id="btn-q3" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Submit #14
+                </button>
+            </div>
+            <div id="feedback-q3" class="mt-3 hidden text-xs font-semibold rounded-xl p-3"></div>
+        </div>
+
+        <!-- Problem #16 -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm transition-all" id="card-q4">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Problem 4 (#16 - Trapezoid Area)</span>
+                <span class="text-xs text-slate-400 font-medium" id="status-q4">Attempts left: 2</span>
+            </div>
+            <p class="text-sm text-slate-800 mb-3">Refer to Exercise #16 figure in <strong>Holt Geometry 5.2</strong> (trapezoid with bases \(7\) and \(9\), height \(3\)).</p>
+            <p class="text-sm font-semibold text-slate-900 mb-4">Find the area of the trapezoid.</p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <input type="text" id="input-q4" placeholder="Enter numerical answer..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white transition-all">
+                <button onclick="checkQuestion('q4')" id="btn-q4" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Submit #16
+                </button>
+            </div>
+            <div id="feedback-q4" class="mt-3 hidden text-xs font-semibold rounded-xl p-3"></div>
+        </div>
+
+        <!-- Problem #18 -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm transition-all" id="card-q5">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Problem 5 (#18 - Trapezoid Area)</span>
+                <span class="text-xs text-slate-400 font-medium" id="status-q5">Attempts left: 2</span>
+            </div>
+            <p class="text-sm text-slate-800 mb-3">Refer to Exercise #18 figure in <strong>Holt Geometry 5.2</strong> (trapezoid with bases \(8\) and \(25\), height \(40\)).</p>
+            <p class="text-sm font-semibold text-slate-900 mb-4">Find the area of the trapezoid.</p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <input type="text" id="input-q5" placeholder="Enter numerical answer..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white transition-all">
+                <button onclick="checkQuestion('q5')" id="btn-q5" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Submit #18
+                </button>
+            </div>
+            <div id="feedback-q5" class="mt-3 hidden text-xs font-semibold rounded-xl p-3"></div>
+        </div>
+
+        <!-- Problem #20 -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm transition-all" id="card-q6">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Problem 6 (#20 - Figure Exercises 19-30)</span>
+                <span class="text-xs text-slate-400 font-medium" id="status-q6">Attempts left: 2</span>
+            </div>
+            <p class="text-sm text-slate-800 mb-3">Refer to the composite parallelogram figure and given segment lengths for Exercises 19–30 in <strong>Holt Geometry 5.2</strong> (\(BK = 14\), \(IL = 32\), \(FK = 7\), \(JI = 8\), \(DH = 25\), \(EH = 17\), \(DG = 18\)).</p>
+            <p class="text-sm font-semibold text-slate-900 mb-4">Find the area of \(\Delta BJK\).</p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <input type="text" id="input-q6" placeholder="Enter numerical answer..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white transition-all">
+                <button onclick="checkQuestion('q6')" id="btn-q6" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Submit #20
+                </button>
+            </div>
+            <div id="feedback-q6" class="mt-3 hidden text-xs font-semibold rounded-xl p-3"></div>
+        </div>
+
+        <!-- Problem #22 -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm transition-all" id="card-q7">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Problem 7 (#22 - Figure Exercises 19-30)</span>
+                <span class="text-xs text-slate-400 font-medium" id="status-q7">Attempts left: 2</span>
+            </div>
+            <p class="text-sm text-slate-800 mb-3">Refer to the composite figure for Exercises 19–30 in <strong>Holt Geometry 5.2</strong>.</p>
+            <p class="text-sm font-semibold text-slate-900 mb-4">Find the area of \(\Delta DIJ\).</p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <input type="text" id="input-q7" placeholder="Enter numerical answer..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white transition-all">
+                <button onclick="checkQuestion('q7')" id="btn-q7" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Submit #22
+                </button>
+            </div>
+            <div id="feedback-q7" class="mt-3 hidden text-xs font-semibold rounded-xl p-3"></div>
+        </div>
+
+        <!-- Problem #24 -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm transition-all" id="card-q8">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Problem 8 (#24 - Figure Exercises 19-30)</span>
+                <span class="text-xs text-slate-400 font-medium" id="status-q8">Attempts left: 2</span>
+            </div>
+            <p class="text-sm text-slate-800 mb-3">Refer to the composite figure for Exercises 19–30 in <strong>Holt Geometry 5.2</strong>.</p>
+            <p class="text-sm font-semibold text-slate-900 mb-4">Find the area of \(\Delta EGK\).</p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <input type="text" id="input-q8" placeholder="Enter numerical answer..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white transition-all">
+                <button onclick="checkQuestion('q8')" id="btn-q8" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Submit #24
+                </button>
+            </div>
+            <div id="feedback-q8" class="mt-3 hidden text-xs font-semibold rounded-xl p-3"></div>
+        </div>
+
+        <!-- Problem #26 -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm transition-all" id="card-q9">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Problem 9 (#26 - Figure Exercises 19-30)</span>
+                <span class="text-xs text-slate-400 font-medium" id="status-q9">Attempts left: 2</span>
+            </div>
+            <p class="text-sm text-slate-800 mb-3">Refer to the composite figure for Exercises 19–30 in <strong>Holt Geometry 5.2</strong>.</p>
+            <p class="text-sm font-semibold text-slate-900 mb-4">Find the area of trapezoid \(ACKI\).</p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <input type="text" id="input-q9" placeholder="Enter numerical answer..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white transition-all">
+                <button onclick="checkQuestion('q9')" id="btn-q9" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Submit #26
+                </button>
+            </div>
+            <div id="feedback-q9" class="mt-3 hidden text-xs font-semibold rounded-xl p-3"></div>
+        </div>
+
+        <!-- Problem #28 -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm transition-all" id="card-q10">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Problem 10 (#28 - Figure Exercises 19-30)</span>
+                <span class="text-xs text-slate-400 font-medium" id="status-q10">Attempts left: 2</span>
+            </div>
+            <p class="text-sm text-slate-800 mb-3">Refer to the composite figure for Exercises 19–30 in <strong>Holt Geometry 5.2</strong>.</p>
+            <p class="text-sm font-semibold text-slate-900 mb-4">Find the area of trapezoid \(BCHE\).</p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <input type="text" id="input-q10" placeholder="Enter numerical answer..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white transition-all">
+                <button onclick="checkQuestion('q10')" id="btn-q10" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Submit #28
+                </button>
+            </div>
+            <div id="feedback-q10" class="mt-3 hidden text-xs font-semibold rounded-xl p-3"></div>
+        </div>
+
+        <!-- Problem #30 -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm transition-all" id="card-q11">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Problem 11 (#30 - Figure Exercises 19-30)</span>
+                <span class="text-xs text-slate-400 font-medium" id="status-q11">Attempts left: 2</span>
+            </div>
+            <p class="text-sm text-slate-800 mb-3">Refer to the composite figure for Exercises 19–30 in <strong>Holt Geometry 5.2</strong>.</p>
+            <p class="text-sm font-semibold text-slate-900 mb-4">Find the area of parallelogram \(ACLI\).</p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <input type="text" id="input-q11" placeholder="Enter numerical answer..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white transition-all">
+                <button onclick="checkQuestion('q11')" id="btn-q11" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Submit #30
+                </button>
+            </div>
+            <div id="feedback-q11" class="mt-3 hidden text-xs font-semibold rounded-xl p-3"></div>
+        </div>
+
+        <!-- Problem #39 -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm transition-all" id="card-q12">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Problem 12 (#39 - Coordinate Trapezoid Area)</span>
+                <span class="text-xs text-slate-400 font-medium" id="status-q12">Attempts left: 2</span>
+            </div>
+            <p class="text-sm text-slate-800 mb-3">Find the area of the trapezoid with vertices at the given coordinate points: \((0, 2)\), \((3, 2)\), \((5, 0)\), \((-1, 0)\).</p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <input type="text" id="input-q12" placeholder="e.g. 9..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white transition-all">
+                <button onclick="checkQuestion('q12')" id="btn-q12" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Submit #39
+                </button>
+            </div>
+            <div id="feedback-q12" class="mt-3 hidden text-xs font-semibold rounded-xl p-3"></div>
+        </div>
+
+        <!-- Problem #41 -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm transition-all" id="card-q13">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Problem 13 (#41 - Coordinate Trapezoid Area)</span>
+                <span class="text-xs text-slate-400 font-medium" id="status-q13">Attempts left: 2</span>
+            </div>
+            <p class="text-sm text-slate-800 mb-3">Find the area of the trapezoid with vertices at the given coordinate points: \((1, 0)\), \((5, 0)\), \((5, 5)\), \((1, 3)\).</p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <input type="text" id="input-q13" placeholder="e.g. 16..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white transition-all">
+                <button onclick="checkQuestion('q13')" id="btn-q13" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Submit #41
+                </button>
+            </div>
+            <div id="feedback-q13" class="mt-3 hidden text-xs font-semibold rounded-xl p-3"></div>
+        </div>
+
+        <!-- Problem #43 -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm transition-all" id="card-q14">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Problem 14 (#43 - Algebraic Dimensions)</span>
+                <span class="text-xs text-slate-400 font-medium" id="status-q14">Attempts left: 2</span>
+            </div>
+            <p class="text-sm text-slate-800 mb-3">Find the base of a triangle with a height of \(10\text{ cm}\) and an area of \(100\text{ cm}^2\).</p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <input type="text" id="input-q14" placeholder="e.g. 20 cm..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white transition-all">
+                <button onclick="checkQuestion('q14')" id="btn-q14" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Submit #43
+                </button>
+            </div>
+            <div id="feedback-q14" class="mt-3 hidden text-xs font-semibold rounded-xl p-3"></div>
+        </div>
+
+        <!-- Problem #45 -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm transition-all" id="card-q15">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Problem 15 (#45 - Trapezoid Midsegment Formula)</span>
+                <span class="text-xs text-slate-400 font-medium" id="status-q15">Attempts left: 2</span>
+            </div>
+            <p class="text-sm text-slate-800 mb-3">Use the diagram at right of a trapezoid and its midsegment to determine a formula for the area of a trapezoid that uses <em>only</em> the height \(h\) of the trapezoid and the length \(m\) of its midsegment.</p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <input type="text" id="input-q15" placeholder="e.g. A = mh..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white transition-all">
+                <button onclick="checkQuestion('q15')" id="btn-q15" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Submit #45
+                </button>
+            </div>
+            <div id="feedback-q15" class="mt-3 hidden text-xs font-semibold rounded-xl p-3"></div>
+        </div>
+
+        <!-- Problem #47 -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm transition-all" id="card-q16">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Problem 16 (#47 - Maximum/Minimum Area Analysis)</span>
+                <span class="text-xs text-slate-400 font-medium" id="status-q16">Attempts left: 2</span>
+            </div>
+            <p class="text-sm text-slate-800 mb-3">Refer to Exercise #47 in <strong>Holt Geometry 5.2</strong>. The parallelograms below have the same perimeter. Which has the largest area? Make a conjecture about the parallelogram with the largest possible area for a given perimeter.</p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <input type="text" id="input-q16" placeholder="e.g. Rectangle / Square (or 90° angles)..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white transition-all">
+                <button onclick="checkQuestion('q16')" id="btn-q16" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Submit #47
+                </button>
+            </div>
+            <div id="feedback-q16" class="mt-3 hidden text-xs font-semibold rounded-xl p-3"></div>
+        </div>
+
+        <!-- Problem #49 -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm transition-all" id="card-q17">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Problem 17 (#49 - Proof Concepts)</span>
+                <span class="text-xs text-slate-400 font-medium" id="status-q17">Attempts left: 2</span>
+            </div>
+            <p class="text-sm text-slate-800 mb-3">Refer to Exercise #49 in <strong>Holt Geometry 5.2</strong>. Write out a two-column or paragraph proof of the formula derived in Activity 2 (Area of a Parallelogram / Triangle).</p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <input type="text" id="input-q17" placeholder="e.g. A = bh (or A = 1/2 bh)..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white transition-all">
+                <button onclick="checkQuestion('q17')" id="btn-q17" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Submit #49
+                </button>
+            </div>
+            <div id="feedback-q17" class="mt-3 hidden text-xs font-semibold rounded-xl p-3"></div>
+        </div>
+
+        <!-- Finish Button -->
+        <div class="py-6 flex justify-center">
+            <button onclick="generateCompletionModal()" class="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold rounded-2xl text-base shadow-xl shadow-blue-600/30 transition-all transform hover:scale-105 flex items-center justify-center gap-3">
+                <i class="fa-solid fa-award"></i> Submit Completed Module & View Grade Token
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Modal Pop-Up Grade Token View -->
+    <div id="completion-modal" class="hidden fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-xl w-full p-6 sm:p-8 border border-slate-200 text-center space-y-5 transform transition-all">
+            
+            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-3xl mx-auto border border-blue-100 shadow-sm">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+
+            <div>
+                <h3 class="text-2xl font-black text-slate-900">Module Completed!</h3>
+                <p id="modal-student-name" class="text-sm font-semibold text-blue-600">Student: Anonymous</p>
+                <span id="modal-score-badge" class="inline-block px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-bold mt-2">
+                    Score: 0 / 17 (0%)
+                </span>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-left space-y-2">
+                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Official Grade Verification Token</label>
+                <div class="flex items-center gap-2 bg-white p-3 rounded-xl border border-slate-300 font-mono text-xs font-bold text-slate-800 break-all select-all">
+                    <span id="token-display">MATH-GRADE::...</span>
+                </div>
+                <button onclick="copyTokenToClipboard()" id="copy-token-btn" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-copy"></i> Copy Token to Clipboard
+                </button>
+            </div>
+
+            <div class="bg-blue-50/70 p-4 rounded-2xl border border-blue-100 text-left space-y-2 text-xs text-slate-700">
+                <h4 class="font-extrabold text-blue-900 flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-info"></i> Instructions to Submit to Dr. Swick:
+                </h4>
+                <ol class="list-decimal list-inside space-y-1 font-medium text-slate-600">
+                    <li>Click <strong>"Copy Token to Clipboard"</strong> above.</li>
+                    <li>Open your <strong>Google Classroom</strong> course assignment page.</li>
+                    <li>Paste the token string into the <strong>Private Comments</strong> box and click <strong>Submit / Turn In</strong>.</li>
+                </ol>
+            </div>
+
+            <div class="pt-2">
+                <button onclick="closeCompletionModal()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all">
+                    Close Window
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Script -->
+    <script>
+        const canvas = document.getElementById('laser-canvas');
+        const ctx = canvas.getContext('2d');
+        let animId = null;
+        let moduleStartTime = Date.now();
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let audioCtx = null;
+        function playLaserSound() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(1600, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(70, audioCtx.currentTime + 0.12);
+
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.12);
+        }
+
+        function triggerLaserShow() {
+            if (animId) {
+                cancelAnimationFrame(animId);
+                animId = null;
+            }
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const colors = ['#2563eb', '#3b82f6', '#06b6d4', '#10b981', '#a855f7', '#f43f5e'];
+            let count = 0;
+
+            const interval = setInterval(() => {
+                playLaserSound();
+                if (count > 25) {
+                    clearInterval(interval);
+                    setTimeout(() => ctx.clearRect(0, 0, canvas.width, canvas.height), 500);
+                    return;
+                }
+
+                ctx.save();
+                ctx.strokeStyle = colors[Math.floor(Math.random() * colors.length)];
+                ctx.lineWidth = Math.random() * 8 + 3;
+                ctx.shadowColor = ctx.strokeStyle;
+                ctx.shadowBlur = 25;
+
+                ctx.beginPath();
+                if (Math.random() > 0.5) {
+                    ctx.moveTo(Math.random() * canvas.width, 0);
+                    ctx.lineTo(Math.random() * canvas.width, canvas.height);
+                } else {
+                    ctx.moveTo(0, Math.random() * canvas.height);
+                    ctx.lineTo(canvas.width, Math.random() * canvas.height);
+                }
+                ctx.stroke();
+                ctx.restore();
+
+                count++;
+            }, 90);
+        }
+
+        // State Tracking & Worked Solutions
+        const qState = {
+            q1: { 
+                attemptsLeft: 2, isCorrect: false, 
+                hint: "Hint: The area of a triangle is given by \\(A = \\frac{1}{2} b h\\).", 
+                worked: "<strong>Worked Solution:</strong><br>Using \\(A = \\frac{1}{2} b h\\) with \\(b = 4\\) and \\(h = 7\\):<br>\\[A = \\frac{1}{2} (4)(7) = 14\\text{ units}^2\\]" 
+            },
+            q2: { 
+                attemptsLeft: 2, isCorrect: false, 
+                hint: "Hint: For an obtuse triangle, use the given perpendicular altitude height extending outside the base.", 
+                worked: "<strong>Worked Solution:</strong><br>Using \\(A = \\frac{1}{2} b h\\) with \\(b = 14\\) and \\(h = 6\\):<br>\\[A = \\frac{1}{2} (14)(6) = 42\\text{ units}^2\\]" 
+            },
+            q3: { 
+                attemptsLeft: 2, isCorrect: false, 
+                hint: "Hint: The area of a parallelogram is given by \\(A = b h\\).", 
+                worked: "<strong>Worked Solution:</strong><br>Using \\(A = b h\\) with \\(b = 2\\) and \\(h = 11\\):<br>\\[A = (2)(11) = 22\\text{ units}^2\\]" 
+            },
+            q4: { 
+                attemptsLeft: 2, isCorrect: false, 
+                hint: "Hint: The area of a trapezoid is \\(A = \\frac{1}{2}(b_1 + b_2)h\\).", 
+                worked: "<strong>Worked Solution:</strong><br>Using \\(A = \\frac{1}{2}(b_1 + b_2)h\\) with \\(b_1 = 7, b_2 = 9, h = 3\\):<br>\\[A = \\frac{1}{2}(7 + 9)(3) = \\frac{1}{2}(16)(3) = 24\\text{ units}^2\\]" 
+            },
+            q5: { 
+                attemptsLeft: 2, isCorrect: false, 
+                hint: "Hint: Average the two parallel bases and multiply by the perpendicular height.", 
+                worked: "<strong>Worked Solution:</strong><br>Using \\(A = \\frac{1}{2}(b_1 + b_2)h\\) with \\(b_1 = 8, b_2 = 25, h = 40\\):<br>\\[A = \\frac{1}{2}(8 + 25)(40) = 33 \\times 20 = 660\\text{ units}^2\\]" 
+            },
+            q6: { 
+                attemptsLeft: 2, isCorrect: false, 
+                hint: "Hint: Base \\(BK = 14\\) and perpendicular height \\(BD = 10\\). Use triangle area formula.", 
+                worked: "<strong>Worked Solution:</strong><br>For \\(\\Delta BJK\\), \\(b = BK = 14\\) and height \\(h = BD - DG = 25 - 15 = 10\\):<br>\\[A = \\frac{1}{2}(14)(10) = 70\\text{ units}^2\\]" 
+            },
+            q7: { 
+                attemptsLeft: 2, isCorrect: false, 
+                hint: "Hint: Right triangle with base \\(JI = 8\\) and height \\(FK = 7\\).", 
+                worked: "<strong>Worked Solution:</strong><br>For \\(\\Delta DIJ\\), base \\(b = JI = 8\\) and height \\(h = FK = 7\\):<br>\\[A = \\frac{1}{2}(8)(7) = 28\\text{ units}^2\\]" 
+            },
+            q8: { 
+                attemptsLeft: 2, isCorrect: false, 
+                hint: "Hint: Triangle base \\(KL = 14\\) and height \\(BD = 10\\).", 
+                worked: "<strong>Worked Solution:</strong><br>For \\(\\Delta EGK\\), base \\(b = KL = 14\\) and height \\(h = 10\\):<br>\\[A = \\frac{1}{2}(14)(10) = 70\\text{ units}^2\\]" 
+            },
+            q9: { 
+                attemptsLeft: 2, isCorrect: false, 
+                hint: "Hint: Bases \\(AC = 14\\) and \\(IK = 32\\), height \\(DH = 25\\). Use trapezoid formula.", 
+                worked: "<strong>Worked Solution:</strong><br>For trapezoid \\(ACKI\\), \\(b_1 = 14, b_2 = 32, h = 25\\):<br>\\[A = \\frac{1}{2}(14 + 32)(25) = \\frac{1}{2}(46)(25) = 23 \\times 25 = 252\\text{ units}^2\\]" 
+            },
+            q10: { 
+                attemptsLeft: 2, isCorrect: false, 
+                hint: "Hint: Add the areas of the constituent geometric regions forming trapezoid \\(BCHE\\).", 
+                worked: "<strong>Worked Solution:</strong><br>Bases \\(BC = 14, EH = 17\\) with height \\(DH - JI = 25 - 8 = 17\\):<br>\\[A = \\frac{1}{2}(14 + 17)(17) = \\frac{1}{2}(31)(17) = 94.5\\text{ units}^2\\]" 
+            },
+            q11: { 
+                attemptsLeft: 2, isCorrect: false, 
+                hint: "Hint: Parallelogram area \\(A = b h\\) with base \\(AC = 14\\) and height \\(DH = 25\\).", 
+                worked: "<strong>Worked Solution:</strong><br>For parallelogram \\(ACLI\\), base \\(b = AC = 14\\) and height \\(h = DH = 25\\):<br>\\[A = 14 \\times 25 = 350\\text{ units}^2\\]" 
+            },
+            q12: { 
+                attemptsLeft: 2, isCorrect: false, 
+                hint: "Hint: Parallel bases \\(b_1 = 3 - 0 = 3\\) and \\(b_2 = 5 - (-1) = 6\\); height \\(h = 2 - 0 = 2\\).", 
+                worked: "<strong>Worked Solution:</strong><br>Bases \\(b_1 = 3\\) (along \\(y=2\\)) and \\(b_2 = 6\\) (along \\(y=0\\)), height \\(h = 2\\):<br>\\[A = \\frac{1}{2}(3 + 6)(2) = 9\\text{ units}^2\\]" 
+            },
+            q13: { 
+                attemptsLeft: 2, isCorrect: false, 
+                hint: "Hint: Vertical parallel bases \\(b_1 = 3 - 0 = 3\\) and \\(b_2 = 5 - 0 = 5\\); height \\(h = 5 - 1 = 4\\).", 
+                worked: "<strong>Worked Solution:</strong><br>Vertical bases \\(b_1 = 3\\) (at \\(x=1\\)) and \\(b_2 = 5\\) (at \\(x=5\\)), height \\(h = 4\\):<br>\\[A = \\frac{1}{2}(3 + 5)(4) = \\frac{1}{2}(8)(4) = 16\\text{ units}^2\\]" 
+            },
+            q14: { 
+                attemptsLeft: 2, isCorrect: false, 
+                hint: "Hint: Substitute \\(A = 100\\) and \\(h = 10\\) into \\(A = \\frac{1}{2} b h\\) and solve for \\(b\\).", 
+                worked: "<strong>Worked Solution:</strong><br>Substitute known values into triangle area formula:<br>\\[100 = \\frac{1}{2} b (10) \\Rightarrow 100 = 5b \\Rightarrow b = 20\\text{ cm}\\]" 
+            },
+            q15: { 
+                attemptsLeft: 2, isCorrect: false, 
+                hint: "Hint: Recall that midsegment length \\(m = \\frac{1}{2}(b_1 + b_2)\\). Substitute \\(m\\) into trapezoid area formula.", 
+                worked: "<strong>Worked Solution:</strong><br>The standard trapezoid area formula is \\(A = \\frac{1}{2}(b_1 + b_2)h\\).<br>Since midsegment \\(m = \\frac{b_1 + b_2}{2}\\), substitute \\(m\\) to get:<br>\\[A = m h\\]" 
+            },
+            q16: { 
+                attemptsLeft: 2, isCorrect: false, 
+                hint: "Hint: Consider how the altitude/height changes as the angle between adjacent sides approaches \\(90^\\circ\\).", 
+                worked: "<strong>Worked Solution:</strong><br>For a fixed perimeter, area \\(A = b h = b \\cdot s \\sin(\\theta)\\) is maximized when \\(\\sin(\\theta) = 1\\) (i.e., \\(\\theta = 90^\\circ\\)).<br>Therefore, the <strong>rectangle (or square)</strong> has the largest area." 
+            },
+            q17: { 
+                attemptsLeft: 2, isCorrect: false, 
+                hint: "Hint: Review how Activity 2 decomposes a parallelogram into a rectangle of area \\(A = bh\\).", 
+                worked: "<strong>Worked Solution:</strong><br>Activity 2 shows that cutting a right triangle from one end of a parallelogram and translating it to the opposite side forms a rectangle of equal base \\(b\\) and height \\(h\\), proving \\(A = bh\\)." 
+            }
+        };
+
+        let correctCount = 0;
+
+        function updateScore() {
+            correctCount = Object.values(qState).filter(q => q.isCorrect).length;
+            document.getElementById('score-counter').textContent = correctCount;
+        }
+
+        function checkQuestion(qId) {
+            const q = qState[qId];
+            if (q.attemptsLeft <= 0 || q.isCorrect) return;
+
+            const feedbackEl = document.getElementById(`feedback-${qId}`);
+            const statusEl = document.getElementById(`status-${qId}`);
+            const btnEl = document.getElementById(`btn-${qId}`);
+
+            q.attemptsLeft--;
+
+            let isUserCorrect = false;
+
+            if (qId === 'q1') {
+                const val = document.getElementById('input-q1').value.trim();
+                if (val.includes("14")) isUserCorrect = true;
+            } else if (qId === 'q2') {
+                const val = document.getElementById('input-q2').value.trim();
+                if (val.includes("42")) isUserCorrect = true;
+            } else if (qId === 'q3') {
+                const val = document.getElementById('input-q3').value.trim();
+                if (val.includes("22")) isUserCorrect = true;
+            } else if (qId === 'q4') {
+                const val = document.getElementById('input-q4').value.trim();
+                if (val.includes("24")) isUserCorrect = true;
+            } else if (qId === 'q5') {
+                const val = document.getElementById('input-q5').value.trim();
+                if (val.includes("660")) isUserCorrect = true;
+            } else if (qId === 'q6') {
+                const val = document.getElementById('input-q6').value.trim();
+                if (val.includes("70")) isUserCorrect = true;
+            } else if (qId === 'q7') {
+                const val = document.getElementById('input-q7').value.trim();
+                if (val.includes("28")) isUserCorrect = true;
+            } else if (qId === 'q8') {
+                const val = document.getElementById('input-q8').value.trim();
+                if (val.includes("70")) isUserCorrect = true;
+            } else if (qId === 'q9') {
+                const val = document.getElementById('input-q9').value.trim();
+                if (val.includes("252")) isUserCorrect = true;
+            } else if (qId === 'q10') {
+                const val = document.getElementById('input-q10').value.trim();
+                if (val.includes("94.5")) isUserCorrect = true;
+            } else if (qId === 'q11') {
+                const val = document.getElementById('input-q11').value.trim();
+                if (val.includes("350")) isUserCorrect = true;
+            } else if (qId === 'q12') {
+                const val = document.getElementById('input-q12').value.trim();
+                if (val.includes("9")) isUserCorrect = true;
+            } else if (qId === 'q13') {
+                const val = document.getElementById('input-q13').value.trim();
+                if (val.includes("16")) isUserCorrect = true;
+            } else if (qId === 'q14') {
+                const val = document.getElementById('input-q14').value.trim();
+                if (val.includes("20")) isUserCorrect = true;
+            } else if (qId === 'q15') {
+                const val = document.getElementById('input-q15').value.trim().toLowerCase();
+                if (val.includes("mh") || val.includes("m*h") || val.includes("h*m")) isUserCorrect = true;
+            } else if (qId === 'q16') {
+                const val = document.getElementById('input-q16').value.trim().toLowerCase();
+                if (val.includes("rectangle") || val.includes("square") || val.includes("90")) isUserCorrect = true;
+            } else if (qId === 'q17') {
+                const val = document.getElementById('input-q17').value.trim().toLowerCase();
+                if (val.includes("bh") || val.includes("area") || val.includes("rectangle")) isUserCorrect = true;
+            }
+
+            feedbackEl.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200', 'bg-rose-50', 'text-rose-800', 'border-rose-200');
+
+            if (isUserCorrect) {
+                q.isCorrect = true;
+                feedbackEl.classList.add('bg-emerald-50', 'text-emerald-800', 'border', 'border-emerald-200');
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i> Correct! Great job.`;
+                statusEl.textContent = "Status: Correct";
+                btnEl.disabled = true;
+                btnEl.className = "px-5 py-2.5 bg-slate-100 text-emerald-700 font-bold text-xs rounded-xl cursor-not-allowed border border-emerald-200";
+                updateScore();
+            } else {
+                if (q.attemptsLeft > 0) {
+                    feedbackEl.classList.add('bg-rose-50', 'text-rose-800', 'border', 'border-rose-200');
+                    feedbackEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-rose-600"></i> Incorrect. You have 1 attempt remaining.<br>${q.hint}`;
+                    statusEl.textContent = "Attempts left: 1";
+                } else {
+                    feedbackEl.classList.add('bg-rose-50', 'text-rose-800', 'border', 'border-rose-200');
+                    feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-600"></i> Incorrect (0 attempts left).<br>${q.worked}`;
+                    statusEl.textContent = "Status: Out of attempts";
+                    btnEl.disabled = true;
+                    btnEl.className = "px-5 py-2.5 bg-slate-100 text-slate-400 font-bold text-xs rounded-xl cursor-not-allowed border border-slate-200";
+                    if (window.MathJax) window.MathJax.typesetPromise([feedbackEl]);
+                }
+            }
+        }
+
+        function generateCompletionModal() {
+            const firstName = document.getElementById('student-first-name').value.trim() || "Anonymous";
+            const lastName = document.getElementById('student-last-name').value.trim() || "Student";
+            const fullName = `${firstName} ${lastName}`;
+
+            updateScore();
+            triggerLaserShow();
+
+            const durationSec = Math.round((Date.now() - moduleStartTime) / 1000);
+            
+            let qBreakdown = [];
+            Object.keys(qState).forEach((key, index) => {
+                const q = qState[key];
+                const statusChar = q.isCorrect ? 'S' : 'F';
+                const atts = 2 - q.attemptsLeft;
+                qBreakdown.push(`Q${index+1}:${statusChar}:${atts}:30s`);
+            });
+
+            const payloadStr = `${lastName}, ${firstName}|${correctCount}/17|${durationSec}s|${qBreakdown.join(';')}`;
+            const b64Token = btoa(payloadStr);
+
+            const finalToken = `MATH-GRADE::${b64Token}`;
+
+            document.getElementById('modal-student-name').textContent = `Student: ${fullName}`;
+            document.getElementById('modal-score-badge').textContent = `Score: ${correctCount} / 17 (${Math.round((correctCount/17)*100)}%)`;
+            document.getElementById('token-display').textContent = finalToken;
+
+            document.getElementById('completion-modal').classList.remove('hidden');
+        }
+
+        function copyTokenToClipboard() {
+            const tokenText = document.getElementById('token-display').textContent;
+            navigator.clipboard.writeText(tokenText).then(() => {
+                const btn = document.getElementById('copy-token-btn');
+                btn.innerHTML = `<i class="fa-solid fa-check"></i> Token Copied!`;
+                btn.className = "w-full py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-2";
+                setTimeout(() => {
+                    btn.innerHTML = `<i class="fa-solid fa-copy"></i> Copy Token to Clipboard`;
+                    btn.className = "w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-2";
+                }, 2000);
+            });
+        }
+
+        function closeCompletionModal() {
+            document.getElementById('completion-modal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
